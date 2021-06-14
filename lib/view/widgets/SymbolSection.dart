@@ -16,7 +16,7 @@ class SymbolSection extends StatelessWidget {
           (index) => Consumer<GamePresenter>(
             builder: (context, game, child) => ToggleSymbolButton(
               symbol: (index + 1).toString(),
-              onPress: () => game.setCurrentBoxSymbol(index + 1),
+              onPress: () => game.onPressSymbol(index + 1),
               elevated: game.currentBox.shouldElevateSymbolButton(index + 1),
             ),
           ),

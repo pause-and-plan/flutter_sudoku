@@ -35,10 +35,9 @@ class ActionsSection extends StatelessWidget {
             ),
           ),
           Consumer<GamePresenter>(
-            builder: (context, game, child) => ToggleIconButton(
-              icon: Icons.wb_incandescent,
-              onPress: game.currentBoxToggleSoluce,
-              elevated: game.currentBox.soluceEnable,
+            builder: (context, game, child) => IconButton(
+              icon: Icon(Icons.wb_incandescent),
+              onPressed: game.currentBoxApplySoluce,
             ),
           ),
           Consumer<GamePresenter>(

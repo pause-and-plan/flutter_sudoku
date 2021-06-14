@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sudoku/constants.dart';
+import 'package:sudoku/presenter/game.dart';
 
 class LevelAndTimerSection extends StatelessWidget {
   const LevelAndTimerSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final gridLevel = 'facile';
     final startDateTime = DateTime.now();
     return Container(
       padding: EdgeInsets.only(left: 15),
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              gridLevel,
-              style: TextStyle(color: Colors.black87),
+            child: Consumer<GamePresenter>(
+              builder: (context, game, child) => Text(
+                levels[game.levelIndex].label,
+                style: TextStyle(color: Colors.black87),
+              ),
             ),
           ),
           Row(

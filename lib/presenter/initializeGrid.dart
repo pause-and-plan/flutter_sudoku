@@ -36,7 +36,7 @@ class Grid {
 }
 
 class GridGenerator extends Grid {
-  GridGenerator({int level = LEVEL_EXPERT}) {
+  GridGenerator({required int level}) {
     generateFilledGrid();
     setGridNoEditable(filledGrid);
     puzzlifyGrid(level);

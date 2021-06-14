@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:sudoku/constants.dart';
+import 'package:flutter/material.dart';
 
 class BoxPresenter {
   final int soluceSymbol;
@@ -7,7 +9,6 @@ class BoxPresenter {
   int puzzleSymbol;
   bool focusEnable = false;
   bool checkEnable = false;
-  bool soluceEnable = false;
   bool annotationsEnable = false;
 
   BoxPresenter({
@@ -17,13 +18,47 @@ class BoxPresenter {
   });
 
   bool hasSymbol() => puzzleSymbol != SYMBOL_EMPTY;
-  int getSymbol() => soluceEnable ? soluceSymbol : puzzleSymbol;
 
+  void applySoluce() => puzzleSymbol = soluceSymbol;
   void toggleFocus() => focusEnable = !focusEnable;
   void toggleCheck() => checkEnable = !checkEnable;
-  void toggleSoluce() => soluceEnable = !soluceEnable;
   void toggleAnnotations() => annotationsEnable = !annotationsEnable;
-  bool shouldElevateSymbolButton(int index) {
-    return puzzleSymbol == index && hasSymbol();
+
+  bool shouldShowAnnotations() => !hasSymbol() && annotationsEnable;
+
+  bool shouldElevateSymbolButton(int symbol) {
+    if (focusEnable == false) return false;
+    if (shouldShowAnnotations()) {
+      return listOfAnnotation[symbol - 1];
+    } else {
+      return (hasSymbol() && puzzleSymbol == symbol);
+    }
+  }
+
+  void reset() {
+    listOfAnnotation = List.filled(9, false);
+    puzzleSymbol = SYMBOL_EMPTY;
+    focusEnable = false;
+    checkEnable = false;
+    annotationsEnable = false;
+  }
+
+  bool shouldCheckSoluce(bool globalCheckEnable) {
+    if (editable && (globalCheckEnable || checkEnable) && hasSymbol()) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isSymbolValid() => puzzleSymbol == soluceSymbol;
+
+  Color getBackgroundColor(bool globalCheckEnable) {
+    if (editable == false) {
+      return Colors.black87;
+    } else if (shouldCheckSoluce(globalCheckEnable)) {
+      return isSymbolValid() ? Colors.green : Colors.red;
+    } else {
+      return Colors.black54;
+    }
   }
 }
