@@ -15,12 +15,6 @@ class ActionsSection extends StatelessWidget {
         alignment: WrapAlignment.spaceAround,
         children: [
           Consumer<GamePresenter>(
-            builder: (context, game, child) => IconButton(
-              icon: Icon(Icons.undo),
-              onPressed: game.undo,
-            ),
-          ),
-          Consumer<GamePresenter>(
             builder: (context, game, child) => ToggleIconButton(
               icon: Icons.check,
               onPress: game.currentBoxToggleCheck,
@@ -38,12 +32,6 @@ class ActionsSection extends StatelessWidget {
             builder: (context, game, child) => IconButton(
               icon: Icon(Icons.wb_incandescent),
               onPressed: game.currentBoxApplySoluce,
-            ),
-          ),
-          Consumer<GamePresenter>(
-            builder: (context, game, child) => IconButton(
-              icon: Icon(Icons.redo),
-              onPressed: game.redo,
             ),
           ),
         ],

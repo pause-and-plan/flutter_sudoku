@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku/presenter/game.dart';
+import 'package:sudoku/presenter/timerPresenter.dart';
 import 'view/HomePage.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => GamePresenter.reset(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => GamePresenter.reset()),
+        ChangeNotifierProvider(create: (context) => MyTimer()),
+      ],
       child: MyApp(),
     ),
   );
@@ -26,7 +30,12 @@ class MyApp extends StatelessWidget {
         ),
         iconTheme: IconThemeData(color: Colors.black54),
       ),
-      home: HomePage(),
+      home: Consumer<GamePresenter>(
+        builder: (context, game, child) => Consumer<MyTimer>(
+          builder: (context, timer, child) =>
+              HomePage(game: game, timer: timer),
+        ),
+      ),
     );
   }
 }

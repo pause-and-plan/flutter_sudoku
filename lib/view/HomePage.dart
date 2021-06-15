@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku/constants.dart';
 import 'package:sudoku/presenter/game.dart';
+import 'package:sudoku/presenter/timerPresenter.dart';
 import 'package:sudoku/view/widgets/ActionSection.dart';
 import 'package:sudoku/view/widgets/LevelAndTimerSection.dart';
 import 'package:sudoku/view/widgets/SymbolSection.dart';
 import 'package:sudoku/view/widgets/grid/GridSection.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final GamePresenter game;
+  final MyTimer timer;
+
+  const HomePage({
+    Key? key,
+    required this.game,
+    required this.timer,
+  }) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -17,8 +24,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setEnabledSystemUIOverlays([]);
-    // SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    Future<void> _askedNewGameDifficulty() async {
+      int? nextLevelIndex = await showDialog<int>(
+          context: context,
+          builder: (BuildContext context) {
+            return MenuDialog(title: 'Nouvelle partie');
+          });
+      if (nextLevelIndex != null) {
+        widget.game.newGame(nextLevelIndex);
+        widget.timer.reset();
+      }
+    }
+
+    Future<void> _askedLaunchNewGame() async {
+      bool? shouldLaunchNewGame = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return WinDialog();
+          });
+      if (shouldLaunchNewGame != null && shouldLaunchNewGame) {
+        _askedNewGameDifficulty();
+      } else {
+        widget.game.disableVictory();
+      }
+    }
 
     return Consumer<GamePresenter>(
       builder: (context, game, child) => Scaffold(
@@ -34,75 +63,24 @@ class _HomePageState extends State<HomePage> {
           actions: [
             ToggleIconButton(
               icon: Icons.done_all,
-              onPress: game.toggleGlobalCheck,
+              onPress: () {
+                game.toggleGlobalCheck();
+                if (game.isVictory) {
+                  _askedLaunchNewGame();
+                  widget.timer.stop();
+                }
+              },
               elevated: game.globalCheckEnable,
             ),
             IconButton(
-              onPressed: () => game.resetGrid(),
+              onPressed: () {
+                game.resetGrid();
+                widget.timer.reset();
+              },
               icon: Icon(Icons.refresh),
             ),
             IconButton(
-              onPressed: () => showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Niveau ',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              Consumer<GamePresenter>(
-                                builder: (context, game, child) =>
-                                    DropdownButton(
-                                  items: List.generate(
-                                    5,
-                                    (index) => DropdownMenuItem<int>(
-                                      value: index,
-                                      child: Text(levels[index].label),
-                                    ),
-                                  ),
-                                  value: game
-                                      .levelIndex, //levels[game.levelIndex].label,
-                                  onChanged: (index) {
-                                    game.onChangeLevel(
-                                        index is int ? index : 0);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          Consumer<GamePresenter>(
-                            builder: (context, game, child) =>
-                                ElevatedButton.icon(
-                              onPressed: () {
-                                game.newGame();
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.refresh,
-                                color: Colors.white,
-                              ),
-                              label: Text(
-                                'NOUVELLE PARTIE',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.blue),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
+              onPressed: _askedNewGameDifficulty,
               icon: Icon(Icons.settings),
             ),
           ],
@@ -131,6 +109,80 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class MenuDialog extends StatelessWidget {
+  final String title;
+  const MenuDialog({Key? key, required this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GamePresenter>(
+      builder: (context, game, child) => SimpleDialog(
+        title: Center(child: Text(title)),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, 0);
+            },
+            child: Center(child: Text(game.levels.getLabel(0))),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, 1);
+            },
+            child: Center(child: Text(game.levels.getLabel(1))),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, 2);
+            },
+            child: Center(child: Text(game.levels.getLabel(2))),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, 3);
+            },
+            child: Center(child: Text(game.levels.getLabel(3))),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Navigator.pop(context, 4);
+            },
+            child: Center(child: Text(game.levels.getLabel(4))),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WinDialog extends StatelessWidget {
+  const WinDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<GamePresenter>(
+      builder: (context, game, child) => Consumer<MyTimer>(
+        builder: (context, timer, child) => SimpleDialog(
+          title: Center(child: Text('Victoire')),
+          children: <Widget>[
+            SizedBox(height: 10),
+            Center(child: Text('Niveau ' + game.getLevelLabel())),
+            SizedBox(height: 10),
+            Center(child: Text('Temps ' + timer.getFormatedDuration())),
+            SizedBox(height: 40),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: Center(child: Text('REJOUER')),
+            ),
+          ],
         ),
       ),
     );

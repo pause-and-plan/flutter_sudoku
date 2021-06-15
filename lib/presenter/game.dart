@@ -4,6 +4,7 @@ import 'package:sudoku/model/Box.dart';
 import 'package:sudoku/presenter/initializeGrid.dart';
 
 import 'package:flutter/material.dart';
+import 'package:sudoku/presenter/levels.dart';
 
 class GamePresenter extends ChangeNotifier {
   List<BoxPresenter> _grid = [];
@@ -12,6 +13,8 @@ class GamePresenter extends ChangeNotifier {
   int levelIndex = 1; // 0 beginner | 1 easy | 2 medium | 3 advanced | 4 expert
   bool loading = false;
   bool ready = false;
+  Levels levels = Levels();
+  bool isVictory = false;
 
   UnmodifiableListView<BoxPresenter> get grid => UnmodifiableListView(_grid);
 
@@ -19,7 +22,7 @@ class GamePresenter extends ChangeNotifier {
 
   GamePresenter();
   GamePresenter.reset() {
-    newGame();
+    newGame(levelIndex);
   }
   void loadingStart() {
     loading = true;
@@ -31,10 +34,12 @@ class GamePresenter extends ChangeNotifier {
     notifyListeners();
   }
 
-  void newGame() {
+  void newGame(int nextLevelIndex) {
+    levelIndex = nextLevelIndex;
     loadingStart();
-    _grid = initializeGrid(levels[levelIndex].baseAmountOfPuzzle);
+    _grid = initializeGrid(levels.getAmountOfPuzzle(levelIndex));
     currentBoxIndex = 0;
+    isVictory = false;
     globalCheckEnable = false;
     loadingStop();
   }
@@ -98,6 +103,7 @@ class GamePresenter extends ChangeNotifier {
     if (canModifyBox(currentBoxIndex)) {
       currentBox.reset();
       currentBox.applySoluce();
+      isVictory = shouldEnableVictoryFlag();
       notifyListeners();
     }
   }
@@ -149,7 +155,28 @@ class GamePresenter extends ChangeNotifier {
       } else {
         toggleCurrentBoxSymbol(symbol);
       }
+      isVictory = shouldEnableVictoryFlag();
       notifyListeners();
     }
+  }
+
+  bool shouldEnableVictoryFlag() {
+    for (BoxPresenter box in _grid) {
+      if (box.isSymbolValid() == false) return false;
+    }
+    return true;
+  }
+
+  String getLevelLabel() => levels.getLabel(levelIndex);
+
+  void disableVictory() {
+    isVictory = false;
+  }
+
+  void completeGrid() {
+    for (BoxPresenter box in _grid) {
+      box.puzzleSymbol = box.soluceSymbol;
+    }
+    isVictory = true;
   }
 }

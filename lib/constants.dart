@@ -2,21 +2,6 @@ const GRID_SIZE = 9;
 const GRID_LENGTH = GRID_SIZE * GRID_SIZE;
 const SYMBOL_EMPTY = 0;
 
-class Level {
-  final int baseAmountOfPuzzle;
-  final String label;
-
-  const Level({required this.baseAmountOfPuzzle, required this.label});
-}
-
-const List<Level> levels = [
-  const Level(label: 'debutant', baseAmountOfPuzzle: 40),
-  const Level(label: 'facile', baseAmountOfPuzzle: 30),
-  const Level(label: 'moyen', baseAmountOfPuzzle: 20),
-  const Level(label: 'difficile', baseAmountOfPuzzle: 10),
-  const Level(label: 'expert', baseAmountOfPuzzle: 0),
-];
-
 const voidCallback = Function.apply;
 
 const List<int> emptyGrid = [

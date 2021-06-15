@@ -14,11 +14,14 @@ A sudoku app project to learn Flutter.
 - check box
 - soluce
 - annotation
+- restart
+- timer
+- new game modal
+- win modal
 
 ## in progress
 
 ## todo
 
-- restart
-- timer
-- history
+- learnings.md
+- work_and_progress.md
