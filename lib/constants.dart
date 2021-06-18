@@ -1,6 +1,7 @@
 const GRID_SIZE = 9;
 const GRID_LENGTH = GRID_SIZE * GRID_SIZE;
 const SYMBOL_EMPTY = 0;
+const int NO_INDEX = -1;
 
 const voidCallback = Function.apply;
 

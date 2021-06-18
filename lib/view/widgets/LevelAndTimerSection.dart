@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku/presenter/game.dart';
-import 'package:sudoku/presenter/timerPresenter.dart';
+import 'package:sudoku/state/app_state.dart';
+import 'package:sudoku/state/timer_state.dart';
 
 class LevelAndTimerSection extends StatelessWidget {
   const LevelAndTimerSection({Key? key}) : super(key: key);
@@ -13,24 +13,24 @@ class LevelAndTimerSection extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Consumer<GamePresenter>(
-              builder: (context, game, child) => Text(
-                game.getLevelLabel(),
+            child: Consumer<AppState>(
+              builder: (context, state, child) => Text(
+                state.grid.getLevelLabel(),
                 style: TextStyle(color: Colors.black87),
               ),
             ),
           ),
-          Consumer<MyTimer>(
-            builder: (context, timer, child) => Row(
+          Consumer<AppState>(
+            builder: (context, state, child) => Row(
               children: [
                 Text(
-                  timer.getFormatedDuration(),
+                  state.timer.getFormatedDuration(),
                   style: TextStyle(color: Colors.black87),
                 ),
                 IconButton(
-                  onPressed: timer.togglePlayPause,
+                  onPressed: state.onToggleTimer,
                   icon: Icon(
-                    timer.isRunning
+                    state.timer.status == TimerStatus.running
                         ? Icons.pause_circle_outline
                         : Icons.play_circle_outline,
                     color: Colors.black54,

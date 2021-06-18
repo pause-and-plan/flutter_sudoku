@@ -23,5 +23,6 @@ A sudoku app project to learn Flutter.
 
 ## todo
 
+- refact state to merge timer & grid
 - learnings.md
 - work_and_progress.md

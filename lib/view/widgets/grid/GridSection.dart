@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku/presenter/game.dart';
+import 'package:sudoku/state/app_state.dart';
 import 'package:sudoku/view/widgets/grid/Annotation.dart';
 
 class Symbol extends StatelessWidget {
@@ -40,25 +40,24 @@ class Box extends StatelessWidget {
     if (width > 500) width = 500;
     double size = (width - 30) / 9;
 
-    return Consumer<GamePresenter>(
-      builder: (context, game, child) => InkWell(
-        onTap: () => game.onPressBox(index),
+    return Consumer<AppState>(
+      builder: (context, state, child) => InkWell(
+        onTap: () => state.onPressBox(index),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black12, width: 1),
-            color: game.grid[index].focusEnable
+            color: state.grid.boxIndex == index
                 ? Colors.black12
                 : Colors.transparent,
           ),
           child: SizedBox(
             width: size,
             height: size,
-            child: game.grid[index].shouldShowAnnotations()
-                ? Annotations(list: game.grid[index].listOfAnnotation)
+            child: state.grid.shouldShowBoxAnnotation(index)
+                ? Annotations(list: state.grid.getListOfAnnotation(index))
                 : Symbol(
-                    text: game.getSymbol(index),
-                    color: game.grid[index]
-                        .getBackgroundColor(game.globalCheckEnable),
+                    text: state.grid.getSymbol(index),
+                    color: state.grid.getSymbolColor(index),
                   ),
           ),
         ),
@@ -115,19 +114,6 @@ class GridSection extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      // child: GridPaper(
-      //   color: Colors.black54,
-      //   divisions: 1,
-      //   subdivisions: 1,
-      //   interval: interval,
-      //   child: GridView.count(
-      //     crossAxisCount: 9,
-      //     children: List.generate(
-      //       GRID_LENGTH,
-      //       (index) => Box(index: index),
-      //     ),
-      //   ),
-      // ),
       child: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [

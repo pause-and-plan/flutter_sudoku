@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku/presenter/game.dart';
+import 'package:sudoku/grid_generator/grid_generator.dart';
+import 'package:sudoku/state/app_state.dart';
+import 'package:sudoku/view/widgets/menu_dialog.dart';
 import 'package:sudoku/view/widgets/shared/MyToggleButton.dart';
+import 'package:sudoku/view/widgets/victory_dialog.dart';
 
 class SymbolSection extends StatelessWidget {
   const SymbolSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _askedNewGameDifficulty(AppState state) async {
+      GridLevel? level = await showDialog<GridLevel>(
+          context: context,
+          builder: (BuildContext context) {
+            return MenuDialog(title: 'Nouvelle partie');
+          });
+      if (level != null) {
+        state.createNewGrid(level);
+      }
+    }
+
+    Future<void> _askedLaunchNewGame(AppState state) async {
+      bool? shouldLaunchNewGame = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return VictoryDialog();
+          });
+      if (shouldLaunchNewGame != null && shouldLaunchNewGame) {
+        _askedNewGameDifficulty(state);
+        state.onToggleTimer();
+      }
+    }
+
     return Container(
       child: Wrap(
         direction: Axis.horizontal,
         children: List.generate(
           9,
-          (index) => Consumer<GamePresenter>(
-            builder: (context, game, child) => ToggleSymbolButton(
+          (index) => Consumer<AppState>(
+            builder: (context, state, child) => ToggleSymbolButton(
               symbol: (index + 1).toString(),
-              onPress: () => game.onPressSymbol(index + 1),
-              elevated: game.currentBox.shouldElevateSymbolButton(index + 1),
+              onPress: () {
+                state.onPressSymbol(index + 1);
+                if (state.grid.isGridFilledWithSuccess()) {
+                  _askedLaunchNewGame(state);
+                }
+              },
+              elevated: state.grid.shouldElevateSymbolButton(index + 1),
             ),
           ),
         ),
@@ -45,6 +76,8 @@ class ToggleSymbolButton extends StatelessWidget {
       ),
       onPress: onPress,
       elevated: elevated,
+      size: 36,
+      padding: 2,
     );
   }
 }

@@ -1,37 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sudoku/presenter/game.dart';
+import 'package:sudoku/grid_generator/grid_generator.dart';
+import 'package:sudoku/state/app_state.dart';
+import 'package:sudoku/view/widgets/menu_dialog.dart';
 import 'package:sudoku/view/widgets/shared/MyToggleButton.dart';
+import 'package:sudoku/view/widgets/victory_dialog.dart';
 
 class ActionsSection extends StatelessWidget {
   const ActionsSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _askedNewGameDifficulty(AppState state) async {
+      GridLevel? level = await showDialog<GridLevel>(
+          context: context,
+          builder: (BuildContext context) {
+            return MenuDialog(title: 'Nouvelle partie');
+          });
+      if (level != null) {
+        state.createNewGrid(level);
+      }
+    }
+
+    Future<void> _askedLaunchNewGame(AppState state) async {
+      bool? shouldLaunchNewGame = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return VictoryDialog();
+          });
+      if (shouldLaunchNewGame != null && shouldLaunchNewGame) {
+        _askedNewGameDifficulty(state);
+        state.onToggleTimer();
+      }
+    }
+
     return Container(
       width: MediaQuery.of(context).size.width,
       child: Wrap(
         direction: Axis.horizontal,
         alignment: WrapAlignment.spaceAround,
         children: [
-          Consumer<GamePresenter>(
-            builder: (context, game, child) => ToggleIconButton(
+          Consumer<AppState>(
+            builder: (context, state, child) => IconButton(
+              icon: Icon(Icons.undo),
+              onPressed: () {
+                state.onPressUndo();
+              },
+            ),
+          ),
+          Consumer<AppState>(
+            builder: (context, state, child) => ToggleIconButton(
               icon: Icons.check,
-              onPress: game.currentBoxToggleCheck,
-              elevated: game.currentBox.checkEnable,
+              onPress: state.onPressBoxCheck,
+              elevated: state.grid.currentBox.checkEnable,
             ),
           ),
-          Consumer<GamePresenter>(
-            builder: (context, game, child) => ToggleIconButton(
+          Consumer<AppState>(
+            builder: (context, state, child) => ToggleIconButton(
               icon: Icons.edit,
-              onPress: game.currentBoxToggleAnnotations,
-              elevated: game.currentBox.annotationsEnable,
+              onPress: state.onPressBoxAnnotation,
+              elevated: state.grid.currentBox.annotationsEnable,
             ),
           ),
-          Consumer<GamePresenter>(
-            builder: (context, game, child) => IconButton(
+          Consumer<AppState>(
+            builder: (context, state, child) => IconButton(
+              icon: Icon(Icons.auto_fix_high_sharp),
+              onPressed: () {
+                state.onPressBoxReset();
+              },
+            ),
+          ),
+          Consumer<AppState>(
+            builder: (context, state, child) => IconButton(
               icon: Icon(Icons.wb_incandescent),
-              onPressed: game.currentBoxApplySoluce,
+              onPressed: () {
+                state.onPressBoxSoluce();
+                if (state.grid.isGridFilledWithSuccess()) {
+                  _askedLaunchNewGame(state);
+                }
+              },
             ),
           ),
         ],
