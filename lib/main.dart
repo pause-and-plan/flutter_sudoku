@@ -28,9 +28,7 @@ class MyApp extends StatelessWidget {
         ),
         iconTheme: IconThemeData(color: Colors.black54),
       ),
-      home: Consumer<AppState>(
-        builder: (context, state, child) => HomePage(),
-      ),
+      home: HomePage(),
     );
   }
 }
