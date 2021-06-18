@@ -30,7 +30,6 @@ class SymbolSection extends StatelessWidget {
           });
       if (shouldLaunchNewGame != null && shouldLaunchNewGame) {
         _askedNewGameDifficulty(state);
-        state.onToggleTimer();
       }
     }
 
@@ -45,6 +44,7 @@ class SymbolSection extends StatelessWidget {
               onPress: () {
                 state.onPressSymbol(index + 1);
                 if (state.grid.isGridFilledWithSuccess()) {
+                  state.onToggleTimer();
                   _askedLaunchNewGame(state);
                 }
               },

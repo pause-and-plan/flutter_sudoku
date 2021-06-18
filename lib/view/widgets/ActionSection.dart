@@ -30,7 +30,6 @@ class ActionsSection extends StatelessWidget {
           });
       if (shouldLaunchNewGame != null && shouldLaunchNewGame) {
         _askedNewGameDifficulty(state);
-        state.onToggleTimer();
       }
     }
 
@@ -76,6 +75,7 @@ class ActionsSection extends StatelessWidget {
               onPressed: () {
                 state.onPressBoxSoluce();
                 if (state.grid.isGridFilledWithSuccess()) {
+                  state.onToggleTimer();
                   _askedLaunchNewGame(state);
                 }
               },
