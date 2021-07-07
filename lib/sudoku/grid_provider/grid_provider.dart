@@ -252,13 +252,19 @@ class GridBuildState {
   final GridBuildStatus status;
   final GridBuildStep step;
   final int? percent;
-  final Grid grid;
+  final Grid? grid;
 
   GridBuildState({
     required this.status,
     required this.step,
     required this.grid,
     this.percent,
+  });
+  GridBuildState.initial({
+    this.status = GridBuildStatus.initial,
+    this.step =  GridBuildStep.initial,
+    this.percent,
+    this.grid,
   });
 }
 
