@@ -63,12 +63,6 @@ class HomePage extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // Consumer<AppState>(
-                //   builder: (context, state, child) => Column(children: [
-                //     if (state.grid.status == GridStatus.loading)
-                //       LinearProgressIndicator()
-                //   ]),
-                // ),
                 Column(children: [
                   LevelAndTimerSection(),
                   GridSection(),

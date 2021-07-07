@@ -202,7 +202,7 @@ class GridGenerator {
     List<int> otherBoxIndexInRegions = [];
     otherBoxIndexInRegions.addAll(_getIndexListOfBoxInSameRow(index));
     otherBoxIndexInRegions.addAll(_getIndexListOfBoxInSameColumn(index));
-    otherBoxIndexInRegions.addAll(_getIndexListOfBoxInSameBloc(index));
+    otherBoxIndexInRegions.addAll(_getIndexListOfBoxInSameBlock(index));
     for (int boxIndex in otherBoxIndexInRegions) {
       if (grid[boxIndex].symbol == symbol) {
         return false;
@@ -242,10 +242,10 @@ class GridGenerator {
     return indexInSameColumn;
   }
 
-  List<int> _getIndexListOfBoxInSameBloc(int index) {
+  List<int> _getIndexListOfBoxInSameBlock(int index) {
     int blocStartColumIndex = ((index % GRID_SIZE) / 3).floor() * 3;
     int blocStartRowIndex = (((index / GRID_SIZE).floor()) / 3).floor() * 3;
-    List<int> indexInSameColumn = [];
+    List<int> indexInSameBlock = [];
 
     for (int y = 0; y < 3; y++) {
       for (int x = 0; x < 3; x++) {
@@ -253,10 +253,10 @@ class GridGenerator {
         int currColumnIndex = blocStartColumIndex + x;
         int currIndex = currRowIndex * GRID_SIZE + currColumnIndex;
         if (currIndex != index) {
-          indexInSameColumn.add(currIndex);
+          indexInSameBlock.add(currIndex);
         }
       }
     }
-    return indexInSameColumn;
+    return indexInSameBlock;
   }
 }

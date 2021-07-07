@@ -12,8 +12,7 @@ class AppState extends ChangeNotifier {
     createNewGrid();
   }
 
-  void createNewGrid([GridLevel level = GridLevel.easy]) async {
-    // await Future.delayed(Duration(milliseconds: 0));
+  void createNewGrid([GridLevel level = GridLevel.easy]) {
     List<Box> listOfBox = _buildListOfBox(level);
     grid = Grid(listOfBox, level);
     timer = MyTimer(notifyListeners);
@@ -121,31 +120,3 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-
-
-
-
-
-/**
- * faire plusieurs layer un pour les events utilisateurs
- * 
- * un pour changer les donnees
- * 
- * 
- */
-
-/**
- * Pour acceder a l'etat de l'application a travers differents widgets
- * il existe plusieurs methode la plus simple est d'utilise provider
- * 
- * On creer une class AppState qui herite de ChangeNotifier
- * 
- * On fourni l'etat de l'app au plus haut dans notre arbre de widgets
- * a l'aide de ChangeNotifierProvider
- * 
- * On place le widget Consumer a l'endroit de l'arbre ou l'on veut recuperer
- * notre etat
- * 
- * 
- */
