@@ -7,4 +7,4 @@ abstract class GridGeneratorEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GenerateGridEvent extends GridGeneratorEvent {}
+class GridGeneratorStartEvent extends GridGeneratorEvent {}

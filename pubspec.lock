@@ -352,6 +352,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  sudoku_provider:
+    dependency: "direct main"
+    description:
+      path: "packages/sudoku_provider"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   term_glyph:
     dependency: transitive
     description:

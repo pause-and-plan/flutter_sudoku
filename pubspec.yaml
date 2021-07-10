@@ -27,6 +27,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
   flutter_bloc: ^7.0.1
+  sudoku_provider:
+    path: "./packages/sudoku_provider"
 
 dev_dependencies:
   flutter_test:

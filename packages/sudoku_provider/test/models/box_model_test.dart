@@ -1,12 +1,12 @@
-import 'package:sudoku_provider/models/box_generator_model.dart';
-import 'package:sudoku_provider/models/symbol_model.dart';
+import 'package:sudoku_provider/src/models/box_model.dart';
+import 'package:sudoku_provider/src/models/symbol_model.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('class box generator', () {
+  group('box puzzle class', () {
     test('property availableSymbols list should be mutable', () {
-      BoxGenerator orderedBox = BoxGenerator.ordered();
-      BoxGenerator unorderedBox = BoxGenerator.unordered();
+      BoxPuzzled orderedBox = BoxPuzzled.ordered();
+      BoxPuzzled unorderedBox = BoxPuzzled.unordered();
 
       expect(orderedBox.availableSymbols.length, 9);
       expect(unorderedBox.availableSymbols.length, 9);
@@ -16,7 +16,7 @@ void main() {
       expect(unorderedBox.availableSymbols.length, 8);
     });
     test('property symbol should be mutable', () {
-      BoxGenerator box = BoxGenerator.ordered();
+      BoxPuzzled box = BoxPuzzled.ordered();
 
       expect(box.symbol, Symbol.none());
       expect(box.hasSymbol, false);

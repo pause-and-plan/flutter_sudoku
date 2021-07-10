@@ -1,7 +1,7 @@
 part of 'grid_generator_bloc.dart';
 
 abstract class GridGeneratorState extends Equatable {
-  final List<BoxGenerator> boxList;
+  final List<BoxPuzzled> boxList;
   const GridGeneratorState({required this.boxList});
 
   @override
@@ -11,16 +11,19 @@ abstract class GridGeneratorState extends Equatable {
 class GridGeneratorInitial extends GridGeneratorState {
   GridGeneratorInitial()
       : super(
-          boxList: List.generate(Grid.length, (_) => BoxGenerator.unordered()),
+          boxList: List.generate(Grid.length, (_) => BoxPuzzled.unordered()),
         );
 }
 
 class GridGeneratorRunning extends GridGeneratorState {
-  GridGeneratorRunning({required List<BoxGenerator> boxList})
+  final int progression;
+
+  GridGeneratorRunning(
+      {required List<BoxPuzzled> boxList, required this.progression})
       : super(boxList: boxList);
 }
 
 class GridGeneratorComplete extends GridGeneratorState {
-  GridGeneratorComplete({required List<BoxGenerator> boxList})
+  GridGeneratorComplete({required List<BoxPuzzled> boxList})
       : super(boxList: boxList);
 }

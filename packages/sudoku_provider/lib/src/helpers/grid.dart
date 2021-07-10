@@ -1,4 +1,6 @@
-import 'package:equatable/equatable.dart';
+import '../helpers/grid_debugger.dart';
+import '../helpers/grid_validator.dart';
+import '../models/box_model.dart';
 
 abstract class Grid {
   static const size = 9;
@@ -48,4 +50,10 @@ abstract class Grid {
     }
     return indexInSameBlock;
   }
+
+  static get validator => GridValidator;
+  static get debugger => GridDebugger;
+  static get list => List.generate(length, (_) => BoxPuzzled.ordered());
 }
+
+enum GridLevel { beginner, easy, medium, advanced, expert }

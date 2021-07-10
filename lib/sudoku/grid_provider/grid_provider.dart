@@ -262,7 +262,7 @@ class GridBuildState {
   });
   GridBuildState.initial({
     this.status = GridBuildStatus.initial,
-    this.step =  GridBuildStep.initial,
+    this.step = GridBuildStep.initial,
     this.percent,
     this.grid,
   });

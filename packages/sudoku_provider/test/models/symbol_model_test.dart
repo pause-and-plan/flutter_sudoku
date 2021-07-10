@@ -1,4 +1,4 @@
-import 'package:sudoku_provider/models/symbol_model.dart';
+import 'package:sudoku_provider/src/models/symbol_model.dart';
 import 'package:test/test.dart';
 
 void main() {

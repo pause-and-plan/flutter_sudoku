@@ -22,7 +22,7 @@ class Symbol extends Equatable {
   String toString() {
     switch (value) {
       case Symbols.none:
-        return '';
+        return ' ';
       case Symbols.s1:
         return '1';
       case Symbols.s2:
