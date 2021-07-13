@@ -14,6 +14,8 @@ class GridProviderBloc extends Bloc<GridProviderEvent, GridProviderState> {
   late GridGeneratorBloc generatorBloc;
   late GridPuzzlerBloc puzzlerBloc;
   late GridLevel level;
+  StreamSubscription? _generatorStream;
+  StreamSubscription? _puzzlerStream;
 
   GridProviderBloc() : super(GridProviderInitial()) {
     generatorBloc = GridGeneratorBloc();
@@ -23,7 +25,7 @@ class GridProviderBloc extends Bloc<GridProviderEvent, GridProviderState> {
   @override
   Stream<GridProviderState> mapEventToState(GridProviderEvent event) async* {
     if (event is GridProviderStartEvent) {
-      yield _startEventToState(event);
+      _startEventToState(event);
     } else if (event is GridProviderRunningEvent) {
       yield* _runningEventToState(event);
     } else if (event is GridProviderCompleteEvent) {
@@ -31,23 +33,26 @@ class GridProviderBloc extends Bloc<GridProviderEvent, GridProviderState> {
     }
   }
 
-  GridProviderState _startEventToState(GridProviderStartEvent event) {
+  _startEventToState(GridProviderStartEvent event) {
     level = event.level;
-    _listenGenerator();
+    _subscribeGenerator();
     generatorBloc.add(GridGeneratorStartEvent());
-    return GridProviderInitial();
   }
 
-  _listenGenerator() {
-    generatorBloc.stream.listen((GridGeneratorState state) {
+  _subscribeGenerator() {
+    _generatorStream = generatorBloc.stream.listen((GridGeneratorState state) {
       if (state is GridGeneratorRunning) {
+        List<BoxPuzzled> boxList = state.boxList.map((box) {
+          return BoxPuzzled.disable(symbol: box.symbol);
+        }).toList();
         add(GridProviderRunningEvent(
-          boxList: state.boxList,
+          boxList: boxList,
           step: GridProviderStep.fill,
           stepPercent: state.progression,
         ));
       } else if (state is GridGeneratorComplete) {
-        _listenPuzzler();
+        _unsubscribeGenerator();
+        _subscribePuzzler();
         List<BoxPuzzled> boxList = state.boxList.map((box) {
           return BoxPuzzled.disable(symbol: box.symbol);
         }).toList();
@@ -56,8 +61,10 @@ class GridProviderBloc extends Bloc<GridProviderEvent, GridProviderState> {
     });
   }
 
-  _listenPuzzler() {
-    puzzlerBloc.stream.listen((GridPuzzlerState state) {
+  _unsubscribeGenerator() => _generatorStream?.cancel();
+
+  _subscribePuzzler() {
+    _puzzlerStream = puzzlerBloc.stream.listen((GridPuzzlerState state) {
       if (state is GridPuzzlerRunning) {
         add(GridProviderRunningEvent(
           boxList: state.boxList,
@@ -69,9 +76,12 @@ class GridProviderBloc extends Bloc<GridProviderEvent, GridProviderState> {
           boxList: state.boxList,
           step: GridProviderStep.puzzle,
         ));
+        _unsubscribePuzzler();
       }
     });
   }
+
+  _unsubscribePuzzler() => _puzzlerStream?.cancel();
 
   Stream<GridProviderState> _runningEventToState(
       GridProviderRunningEvent event) async* {

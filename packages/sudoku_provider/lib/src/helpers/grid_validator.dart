@@ -8,8 +8,8 @@ class GridValidator {
   GridValidator({required List<Symbol> symbolList}) {
     this._symbolList = symbolList;
   }
-  GridValidator.fromBoxList({required List<Box> boxList}) {
-    this._symbolList = boxList.map((Box box) => box.symbol).toList();
+  GridValidator.fromBoxList({required List<BoxPuzzled> boxList}) {
+    this._symbolList = boxList.map((BoxPuzzled box) => box.symbol).toList();
   }
 
   bool isValid() {

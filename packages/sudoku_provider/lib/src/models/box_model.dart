@@ -1,46 +1,63 @@
 import 'package:equatable/equatable.dart';
 import '../models/symbol_model.dart';
 
-abstract class Box extends Equatable {
-  Symbol symbol;
+class BoxPuzzled extends Equatable {
+  final Symbol symbol;
+  final List<Symbol> availableSymbols;
+  final bool editable;
+  bool get disable => !editable;
   bool get hasSymbol => symbol.hasValue;
 
-  Box({required this.symbol});
-
-  @override
-  List<Object> get props => [symbol];
-}
-
-enum PuzzleStatus { locked, unlocked }
-
-class BoxPuzzled extends Box {
-  List<Symbol> availableSymbols;
-  bool editable = true;
-  bool get disable => !editable;
-
-  BoxPuzzled({
-    required Symbol symbol,
+  const BoxPuzzled({
+    required this.symbol,
     required this.availableSymbols,
     this.editable = true,
-  }) : super(symbol: symbol);
+  });
 
-  BoxPuzzled.disable({required Symbol symbol})
-      : this(
-          symbol: symbol,
-          availableSymbols: Symbol.orderedList(),
-          editable: false,
-        );
-  BoxPuzzled.ordered()
-      : this(symbol: Symbol.none(), availableSymbols: Symbol.orderedList());
-  BoxPuzzled.unordered()
-      : this(symbol: Symbol.none(), availableSymbols: Symbol.unorderedList());
+  const BoxPuzzled.disable({required Symbol symbol})
+      : this(symbol: symbol, availableSymbols: const [], editable: false);
+  const BoxPuzzled.editable({required List<Symbol> availableSymbols})
+      : this(symbol: const Symbol.none(), availableSymbols: availableSymbols);
 
-  Symbol pickAvailableSymbol() {
-    Symbol symbol = availableSymbols[0];
-    availableSymbols.removeAt(0);
-    return symbol;
+  // const BoxPuzzled.ordered()
+  //     : this(symbol: const Symbol.none(), availableSymbols: Symbol.list);
+  // const BoxPuzzled.unordered({required availableSymbols})
+  //     : this(symbol: const Symbol.none(), availableSymbols: availableSymbols);
+
+  Symbol getFirstAvailableSymbol() {
+    return availableSymbols[0];
+  }
+
+  BoxPuzzled copyWithoutAvailableSymbol(Symbol symbol) {
+    List<Symbol> nextAvailableSymbol = [...availableSymbols]..remove(symbol);
+    return copyWith(availableSymbols: nextAvailableSymbol);
+  }
+
+  BoxPuzzled copyWithSymbol(Symbol symbol) {
+    List<Symbol> nextAvailableSymbol = [...availableSymbols]..remove(symbol);
+    return copyWith(symbol: symbol, availableSymbols: nextAvailableSymbol);
+  }
+
+  BoxPuzzled copyWith({
+    Symbol? symbol,
+    List<Symbol>? availableSymbols,
+    bool? editable,
+  }) {
+    return BoxPuzzled(
+      symbol: symbol ?? this.symbol,
+      availableSymbols: availableSymbols ?? this.availableSymbols,
+      editable: editable ?? this.editable,
+    );
   }
 
   @override
-  List<Object> get props => [symbol, availableSymbols];
+  List<Object> get props => [symbol, availableSymbols, editable];
+
+  static BoxPuzzled unordered() {
+    return BoxPuzzled.editable(availableSymbols: Symbol.unorderedList());
+  }
+
+  static BoxPuzzled ordered() {
+    return BoxPuzzled.editable(availableSymbols: Symbol.orderedList());
+  }
 }

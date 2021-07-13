@@ -11,11 +11,16 @@ part 'grid_generator_event.dart';
 part 'grid_generator_state.dart';
 
 class GridGeneratorBloc extends Bloc<GridGeneratorEvent, GridGeneratorState> {
-  late List<BoxPuzzled> boxList;
+  List<BoxPuzzled> _boxList = GridGeneratorState.unorderedBoxList();
   late int _index;
   int _progression = 0;
 
-  BoxPuzzled get _currBox => boxList[_index];
+  BoxPuzzled get _currBox => _boxList[_index];
+  set _currBox(BoxPuzzled box) {
+    List<BoxPuzzled> nextBoxList = [..._boxList];
+    nextBoxList[_index] = box;
+    _boxList = nextBoxList;
+  }
 
   GridGeneratorBloc() : super(GridGeneratorInitial());
 
@@ -31,15 +36,24 @@ class GridGeneratorBloc extends Bloc<GridGeneratorEvent, GridGeneratorState> {
   Stream<GridGeneratorState> _startEventToState() async* {
     _initializeGrid();
     while (0 <= _index && _index < Grid.length) {
+      await Future.delayed(Duration(milliseconds: 0));
       _progression = (_index + 1) ~/ Grid.length;
       _tryResolveCurrBox();
-      yield GridGeneratorRunning(boxList: boxList, progression: _progression);
+      yield GridGeneratorRunning(boxList: _boxList, progression: _progression);
+
+      // var nextState =
+      //     GridGeneratorRunning(boxList: boxList, progression: _progression);
+      // if (state == nextState) {
+      //   print('in generator emit same running state');
+      // } else {
+      //   print('in generator emit different running state');
+      // }
     }
-    yield GridGeneratorComplete(boxList: boxList);
+    yield GridGeneratorComplete(boxList: _boxList);
   }
 
   _initializeGrid() {
-    boxList = List.generate(Grid.length, (_) => BoxPuzzled.unordered());
+    _boxList = List.generate(Grid.length, (_) => BoxPuzzled.unordered());
     _index = 0;
     _progression = 0;
   }
@@ -50,24 +64,26 @@ class GridGeneratorBloc extends Bloc<GridGeneratorEvent, GridGeneratorState> {
       _index++;
     } catch (error) {
       // print(error);
-      boxList[_index] = BoxPuzzled.unordered();
+      _currBox = BoxPuzzled.unordered();
       _index--;
     }
   }
 
   void _resolveCurrBox() {
     while (_currBox.availableSymbols.isNotEmpty) {
-      Symbol symbol = _currBox.pickAvailableSymbol();
+      Symbol symbol = _currBox.getFirstAvailableSymbol();
       if (_canSetBoxSymbol(symbol)) {
-        boxList[_index].symbol = symbol;
+        _currBox = _currBox.copyWithSymbol(symbol);
         return;
+      } else {
+        _currBox = _currBox.copyWithoutAvailableSymbol(symbol);
       }
     }
     throw ('No one available symbol can be set at this index');
   }
 
   bool _canSetBoxSymbol(Symbol symbol) {
-    GridValidator validator = GridValidator.fromBoxList(boxList: boxList);
+    GridValidator validator = GridValidator.fromBoxList(boxList: _boxList);
     return validator.isSymbolValidAtIndex(symbol, _index);
   }
 }

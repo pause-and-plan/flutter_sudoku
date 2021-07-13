@@ -9,6 +9,7 @@ class GridResolver {
   int _direction = 1;
   int _soluceAmount = 0;
   BoxPuzzled get _currBox => boxList[_index];
+  set _currBox(BoxPuzzled box) => boxList[_index] = box;
 
   GridResolver({required this.boxList});
   GridResolver.fromEmptyGrid() : this(boxList: Grid.list);
@@ -30,17 +31,19 @@ class GridResolver {
       _resolveCurrBox();
       _direction = 1;
     } catch (error) {
-      boxList[_index] = BoxPuzzled.unordered();
+      _currBox = BoxPuzzled.unordered();
       _direction = -1;
     }
   }
 
   void _resolveCurrBox() {
     while (_currBox.availableSymbols.isNotEmpty) {
-      Symbol symbol = _currBox.pickAvailableSymbol();
+      Symbol symbol = _currBox.getFirstAvailableSymbol();
       if (_canSetBoxSymbol(symbol)) {
-        boxList[_index].symbol = symbol;
+        _currBox = _currBox.copyWithSymbol(symbol);
         return;
+      } else {
+        _currBox = _currBox.copyWithoutAvailableSymbol(symbol);
       }
     }
     throw ('No one available symbol can be set at this index');

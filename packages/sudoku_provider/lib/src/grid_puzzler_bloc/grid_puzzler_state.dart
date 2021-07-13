@@ -7,7 +7,7 @@ abstract class GridPuzzlerState extends Equatable {
   @override
   List<Object> get props => [...boxList];
 
-  static disableList(List<Box> boxList) {
+  static disableList(List<BoxPuzzled> boxList) {
     return boxList.map((e) => BoxPuzzled.disable(symbol: e.symbol)).toList();
   }
 }

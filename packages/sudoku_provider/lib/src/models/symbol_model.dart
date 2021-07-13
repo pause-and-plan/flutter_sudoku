@@ -46,7 +46,7 @@ class Symbol extends Equatable {
 
   bool get hasValue => value != Symbols.none;
 
-  static const List<Symbol> _list = [
+  static const List<Symbol> list = [
     Symbol(value: Symbols.s1),
     Symbol(value: Symbols.s2),
     Symbol(value: Symbols.s3),
@@ -57,7 +57,7 @@ class Symbol extends Equatable {
     Symbol(value: Symbols.s8),
     Symbol(value: Symbols.s9),
   ];
-  static List<Symbol> orderedList() => [..._list];
+  static List<Symbol> orderedList() => [...list];
   static List<Symbol> unorderedList() => orderedList()..shuffle();
 }
 

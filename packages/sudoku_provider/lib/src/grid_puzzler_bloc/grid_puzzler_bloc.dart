@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../grid_generator_bloc/grid_generator_bloc.dart';
 import '../helpers/grid.dart';
-import '../helpers/grid_debugger.dart';
 import '../helpers/grid_resolver.dart';
 import '../models/box_model.dart';
 import '../models/symbol_model.dart';
@@ -20,6 +18,14 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
   int _progression = 0;
   late List<int> _puzzleList = List.generate(Grid.length, (index) => index)
     ..shuffle();
+  BoxPuzzled get _originalBox => originalGrid[_index];
+  set _originalBox(BoxPuzzled box) {
+    List<BoxPuzzled> nextGrid = [...originalGrid];
+    nextGrid[_index] = box;
+    originalGrid = nextGrid;
+  }
+  // BoxPuzzled get puzzleBox => puzzleGrid[_index];
+  // set puzzleBox(BoxPuzzled box) => puzzleGrid[_index] = box;
 
   GridPuzzlerBloc() : super(GridPuzzlerInitial());
 
@@ -37,6 +43,7 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
     originalGrid = GridPuzzlerBloc.disableGrid(event.boxList);
     puzzleGrid = GridPuzzlerBloc.disableGrid(event.boxList);
     _level = event.level;
+    _puzzleList = List.generate(Grid.length, (index) => index)..shuffle();
     _adaptPuzzleListWithLevel();
     _progression = 0;
     yield* _puzzlify();
@@ -44,6 +51,8 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
 
   Stream<GridPuzzlerState> _puzzlify() async* {
     while (_puzzleList.isNotEmpty) {
+      print(_puzzleList.length);
+      await Future.delayed(Duration.zero);
       _progression = _puzzleList.length ~/ _levelToAmountOfTry();
       _index = _pickIndexInList();
       _tryToPuzzlifyBox();
@@ -60,11 +69,11 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
       // GridDebugger debugger = GridDebugger.clean(originalGrid);
       // debugger.debug();
       // print('\n');
-      originalGrid[_index].editable = true;
+      _originalBox = _originalBox.copyWith(editable: true);
       _puzzlifyBox();
     } catch (error) {
       // print(error);
-      originalGrid[_index].editable = false;
+      _originalBox = _originalBox.copyWith(editable: false);
     }
   }
 
@@ -107,11 +116,11 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
       case GridLevel.advanced:
         return Grid.length - 20;
       case GridLevel.expert:
-        return Grid.length - 0;
+        return Grid.length - 10;
     }
   }
 
-  static List<BoxPuzzled> disableGrid(List<Box> boxList) {
+  static List<BoxPuzzled> disableGrid(List<BoxPuzzled> boxList) {
     return boxList.map((e) => BoxPuzzled.disable(symbol: e.symbol)).toList();
   }
 }
