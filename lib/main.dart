@@ -15,15 +15,38 @@ class MyApp extends StatelessWidget {
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
         title: 'Sudoku Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: BlocProvider(
-          create: (context) => GridBloc(),
-          child: GridPage(),
+        theme: ThemeData(primarySwatch: Colors.blue),
+        debugShowCheckedModeBanner: false,
+        home: BannerWidget(
+          child: BlocProvider(
+            create: (context) => GridBloc(),
+            child: GridPage(),
+          ),
         ),
       );
     });
+  }
+}
+
+class BannerWidget extends StatelessWidget {
+  final Widget child;
+  const BannerWidget({required this.child, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Banner(
+      child: child,
+      location: BannerLocation.topEnd,
+      message: 'P&P',
+      color: Colors.green.withOpacity(0.6),
+      textStyle: TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 12.0,
+        letterSpacing: 1.0,
+        color: Colors.white70,
+      ),
+      textDirection: TextDirection.ltr,
+    );
   }
 }
 
