@@ -8,6 +8,7 @@ class Box extends Equatable {
   final bool isPuzzle;
   final bool isFocus;
   final bool isHint;
+  bool get hasError => symbol.hasValue && soluce != symbol;
   bool get disable => !isPuzzle;
 
   const Box({

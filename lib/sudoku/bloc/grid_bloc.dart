@@ -13,6 +13,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   final GridRepoBloc repo = GridRepoBloc();
   List<Box> _boxList = GridInitial.initialBoxList();
   bool _annotation = false;
+  bool _soluce = false;
   int _index = 0;
   Box get _currBox => _boxList[_index];
   set _currBox(Box box) {
@@ -41,21 +42,58 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       yield* _pressSymbolEventToState(event);
     } else if (event is GridPressEraseEvent) {
       yield* _pressEraseEventToState(event);
+    } else if (event is GridResetEvent) {
+      yield* _resetEventToState(event);
+    } else if (event is GridPressCheckEvent) {
+      yield* _pressCheckEventToState(event);
+    } else if (event is GridPressAnnotationEvent) {
+      yield* _pressAnnotationEventToState(event);
+    } else if (event is GridUndoEvent) {
+      yield* _undoEventToState(event);
     }
+  }
+
+  Stream<GridState> _undoEventToState(GridUndoEvent event) async* {
+    // yield (state as GridEditable).copyWith(annotation: _annotation);
+  }
+
+  Stream<GridState> _pressAnnotationEventToState(
+      GridPressAnnotationEvent event) async* {
+    _annotation = !_annotation;
+    yield (state as GridEditable).copyWith(annotation: _annotation);
+  }
+
+  Stream<GridState> _pressCheckEventToState(GridPressCheckEvent event) async* {
+    print('check');
+    _soluce = !_soluce;
+    yield (state as GridEditable).copyWith(soluce: _soluce);
+  }
+
+  Stream<GridState> _resetEventToState(GridResetEvent event) async* {
+    _boxList = _boxList.map((Box box) => box.reset()).toList();
+    yield (state as GridEditable).copyWith(boxList: _boxList);
   }
 
   Stream<GridState> _pressSymbolEventToState(
       GridPressSymbolEvent event) async* {
     if (_currBox.isFocus) {
-      _currBox = _currBox.copyWith(symbol: event.symbol);
-      yield GridEditable(boxList: _boxList, annotations: _annotation);
+      if (_annotation) {
+        List<Symbol> nextAnnotations = _currBox.toggleAnnotation(event.symbol);
+        _currBox = _currBox.copyWith(
+          symbol: Symbol.none(),
+          annotations: nextAnnotations,
+        );
+      } else {
+        _currBox = _currBox.copyWith(symbol: event.symbol, annotations: []);
+      }
+      yield (state as GridEditable).copyWith(boxList: _boxList);
     }
   }
 
   Stream<GridState> _pressEraseEventToState(GridPressEraseEvent event) async* {
     if (_currBox.isFocus) {
       _currBox = _currBox.reset().copyWith(isFocus: true);
-      yield GridEditable(boxList: _boxList, annotations: _annotation);
+      yield (state as GridEditable).copyWith(boxList: _boxList);
     }
   }
 
@@ -66,7 +104,10 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       yield GridCreation(boxList: event.state.boxList);
     } else if (event.state is GridRepoComplete) {
       yield GridEditable(
-          boxList: event.state.boxList, annotations: _annotation);
+        boxList: event.state.boxList,
+        annotation: _annotation,
+        soluce: _soluce,
+      );
     }
     _boxList = event.state.boxList;
   }
@@ -80,13 +121,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       } else {
         _currBox = _currBox.copyWith(isFocus: !_currBox.isFocus);
       }
-      yield GridEditable(boxList: _boxList, annotations: _annotation);
+      yield (state as GridEditable).copyWith(boxList: _boxList);
     }
-  }
-
-  setBox(int index, Box box) {
-    List<Box> next = [..._boxList];
-    next[index] = box;
-    _boxList = next;
   }
 }
