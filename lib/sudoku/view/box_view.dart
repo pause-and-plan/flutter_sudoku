@@ -51,7 +51,7 @@ class BoxContainer extends StatelessWidget {
       child: Container(
         width: boxSize.w,
         height: boxSize.w,
-        padding: EdgeInsets.all(0.6.w),
+        padding: EdgeInsets.all(0.9.w),
         child: child,
       ),
     );
@@ -95,17 +95,18 @@ class BasicBoxView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color = Colors.blueGrey.withOpacity(0.1);
+    Color bgColor = Colors.white.withOpacity(0.02);
     if (box.symbol.hasValue && box.disable) {
-      color = Colors.blueGrey.withOpacity(0.3);
+      bgColor = Colors.blueGrey.withOpacity(0.2);
     }
-    if (box.isFocus) color = Colors.blue.shade800;
+    if (box.isFocus) bgColor = Colors.blue;
 
     String text = box.soluce.toString();
     if (box.isPuzzle) text = box.symbol.toString();
 
     Color fontColor = Colors.white70;
     if (!box.isFocus && box.isPuzzle) fontColor = Colors.blue.shade200;
+    if (box.isFocus) fontColor = Colors.black87;
 
     FontWeight fontWeight = FontWeight.normal;
     if (box.isFocus) fontWeight = FontWeight.bold;
@@ -118,7 +119,7 @@ class BasicBoxView extends StatelessWidget {
       height: size.w,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
-        color: color,
+        color: bgColor,
       ),
       child: Visibility(
         visible: !hideText,

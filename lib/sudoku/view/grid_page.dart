@@ -12,7 +12,11 @@ class GridPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sudoku')),
+      appBar: AppBar(
+        title: Text('Sudoku'),
+        actions: [],
+      ),
+      backgroundColor: Colors.grey.shade900,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
