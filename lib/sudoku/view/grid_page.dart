@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sudoku/sudoku/bloc/grid_bloc.dart';
 import 'package:sudoku/sudoku/view/grid_view.dart';
+import 'package:sudoku/sudoku/view/symbol_bar.dart';
 import 'package:sudoku_provider/sudoku_provider.dart';
+import 'package:sizer/sizer.dart';
 
 class GridPage extends StatelessWidget {
   const GridPage({Key? key}) : super(key: key);
@@ -15,12 +17,15 @@ class GridPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GridWidget(),
+          SizedBox(height: 2.h),
+          SymbolBar(),
+          SizedBox(height: 2.h),
           ElevatedButton(
             onPressed: () => context
                 .read<GridBloc>()
                 .add(GridBuildEvent(GridLevel.beginner)),
             child: Text('new grid'),
-          )
+          ),
         ],
       ),
     );

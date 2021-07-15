@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:sudoku/sudoku/view/block_view.dart';
+import 'package:sudoku/theme/theme.dart';
 import 'package:sudoku_provider/sudoku_provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -8,15 +10,16 @@ class GridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        GridRow(rowIndex: 0),
-        HorizontalDivider(),
-        GridRow(rowIndex: 1),
-        HorizontalDivider(),
-        GridRow(rowIndex: 2),
-      ],
+    return Center(
+      child: Column(
+        children: [
+          GridRow(rowIndex: 0),
+          HorizontalDivider(),
+          GridRow(rowIndex: 1),
+          HorizontalDivider(),
+          GridRow(rowIndex: 2),
+        ],
+      ),
     );
   }
 }
@@ -29,14 +32,12 @@ class GridRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BorderRadius border = BorderRadius.zero;
-    final double _height = 30.w;
     if (rowIndex == 0) {
       border = BorderRadius.vertical(top: Radius.circular(10));
     } else if (rowIndex == 2) {
       border = BorderRadius.vertical(bottom: Radius.circular(10));
     }
     return Container(
-      height: _height,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -58,12 +59,17 @@ class VerticalDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 2,
-      height: 90.w,
-      decoration: BoxDecoration(
-        borderRadius: border,
-        color: Colors.black38,
+    double height = boxSize.w * 3 + 2;
+    double maxHeight = boxMaxSize * 3 + 2;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: Container(
+        width: 2,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: border,
+          color: Colors.blueGrey,
+        ),
       ),
     );
   }
@@ -73,12 +79,18 @@ class HorizontalDivider extends StatelessWidget {
   const HorizontalDivider({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 90.w,
-      height: 2,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        color: Colors.black38,
+    double width = boxSize.w * 9 + 10;
+    double maxWidth = boxMaxSize * 9 + 10;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: Container(
+        width: width,
+        height: 2,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.blueGrey,
+        ),
       ),
     );
   }

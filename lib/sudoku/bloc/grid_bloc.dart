@@ -13,6 +13,13 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   final GridRepoBloc repo = GridRepoBloc();
   List<Box> _boxList = GridInitial.initialBoxList();
   bool _annotation = false;
+  int _index = 0;
+  Box get _currBox => _boxList[_index];
+  set _currBox(Box box) {
+    List<Box> next = [..._boxList];
+    next[_index] = box;
+    _boxList = next;
+  }
 
   GridBloc() : super(GridInitial(boxList: GridInitial.initialBoxList())) {
     repo.stream.listen((GridRepoState state) {
@@ -26,9 +33,29 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   ) async* {
     if (event is GridBuildEvent) {
       repo.add(GridRepoStartEvent(level: event.level));
-    }
-    if (event is GridBuildingEvent) {
+    } else if (event is GridBuildingEvent) {
       yield* _buildEventToState(event);
+    } else if (event is GridPressBoxEvent) {
+      yield* _pressBoxEventToState(event);
+    } else if (event is GridPressSymbolEvent) {
+      yield* _pressSymbolEventToState(event);
+    } else if (event is GridPressEraseEvent) {
+      yield* _pressEraseEventToState(event);
+    }
+  }
+
+  Stream<GridState> _pressSymbolEventToState(
+      GridPressSymbolEvent event) async* {
+    if (_currBox.isFocus) {
+      _currBox = _currBox.copyWith(symbol: event.symbol);
+      yield GridEditable(boxList: _boxList, annotations: _annotation);
+    }
+  }
+
+  Stream<GridState> _pressEraseEventToState(GridPressEraseEvent event) async* {
+    if (_currBox.isFocus) {
+      _currBox = _currBox.reset().copyWith(isFocus: true);
+      yield GridEditable(boxList: _boxList, annotations: _annotation);
     }
   }
 
@@ -42,5 +69,24 @@ class GridBloc extends Bloc<GridEvent, GridState> {
           boxList: event.state.boxList, annotations: _annotation);
     }
     _boxList = event.state.boxList;
+  }
+
+  Stream<GridState> _pressBoxEventToState(GridPressBoxEvent event) async* {
+    if (_boxList[event.index].isPuzzle) {
+      if (event.index != _index) {
+        _currBox = _currBox.copyWith(isFocus: false);
+        _index = event.index;
+        _currBox = _currBox.copyWith(isFocus: true);
+      } else {
+        _currBox = _currBox.copyWith(isFocus: !_currBox.isFocus);
+      }
+      yield GridEditable(boxList: _boxList, annotations: _annotation);
+    }
+  }
+
+  setBox(int index, Box box) {
+    List<Box> next = [..._boxList];
+    next[index] = box;
+    _boxList = next;
   }
 }

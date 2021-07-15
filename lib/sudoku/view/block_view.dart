@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sudoku/sudoku/view/box_view.dart';
+import 'package:sudoku/theme/theme.dart';
 import 'package:sudoku_provider/sudoku_provider.dart';
 import 'package:sizer/sizer.dart';
 
@@ -29,9 +30,7 @@ class BlockRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BorderRadius border = BorderRadius.all(Radius.circular(10));
-    final double _height = 10.w - 2;
     return Container(
-      height: _height,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -53,12 +52,16 @@ class VerticalDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 6.w,
-      decoration: BoxDecoration(
-        borderRadius: border,
-        color: Colors.black12,
+    double size = boxSize - 4;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: boxMaxSize),
+      child: Container(
+        width: 1,
+        height: size.w,
+        decoration: BoxDecoration(
+          borderRadius: border,
+          color: Colors.white12,
+        ),
       ),
     );
   }
@@ -69,16 +72,9 @@ class DividerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 30.w,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          HorizontalDivider(),
-          HorizontalDivider(),
-          HorizontalDivider()
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [HorizontalDivider(), HorizontalDivider(), HorizontalDivider()],
     );
   }
 }
@@ -87,12 +83,18 @@ class HorizontalDivider extends StatelessWidget {
   const HorizontalDivider({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 6.w,
-      height: 1,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-        color: Colors.black12,
+    double size = boxSize - 4;
+    double margin = (boxSize - size) / 2;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: boxMaxSize),
+      child: Container(
+        width: size.w,
+        height: 1,
+        margin: EdgeInsets.symmetric(horizontal: margin.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          color: Colors.white12,
+        ),
       ),
     );
   }
