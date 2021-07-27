@@ -57,3 +57,11 @@ abstract class Grid {
 }
 
 enum GridLevel { beginner, easy, medium, advanced, expert }
+
+const GridLevels = [
+  GridLevel.beginner,
+  GridLevel.easy,
+  GridLevel.medium,
+  GridLevel.advanced,
+  GridLevel.expert,
+];

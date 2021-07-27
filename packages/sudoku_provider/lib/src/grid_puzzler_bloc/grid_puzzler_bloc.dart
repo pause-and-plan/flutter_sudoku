@@ -51,7 +51,6 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
 
   Stream<GridPuzzlerState> _puzzlify() async* {
     while (_puzzleList.isNotEmpty) {
-      print(_puzzleList.length);
       await Future.delayed(Duration.zero);
       _progression = _puzzleList.length ~/ _levelToAmountOfTry();
       _index = _pickIndexInList();
@@ -66,13 +65,9 @@ class GridPuzzlerBloc extends Bloc<GridPuzzlerEvent, GridPuzzlerState> {
 
   _tryToPuzzlifyBox() {
     try {
-      // GridDebugger debugger = GridDebugger.clean(originalGrid);
-      // debugger.debug();
-      // print('\n');
       _originalBox = _originalBox.copyWith(editable: true);
       _puzzlifyBox();
     } catch (error) {
-      // print(error);
       _originalBox = _originalBox.copyWith(editable: false);
     }
   }

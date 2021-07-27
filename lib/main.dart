@@ -1,29 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:sudoku/navigation/bloc/nav_bloc.dart';
+import 'package:sudoku/navigation/view/my_navigator.dart';
 import 'package:sudoku/sudoku/bloc/grid_bloc.dart';
-import 'package:sudoku/sudoku/view/grid_page.dart';
+import 'package:sudoku/sudoku/bloc/timer_bloc.dart';
 import 'package:sudoku/theme/theme.dart';
-// import 'package:sudoku_provider/sudoku_provider.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    TimerBloc timerBloc = TimerBloc();
+    GridBloc gridBloc = GridBloc(timerBloc: timerBloc);
+    NavBloc navBloc = NavBloc();
+
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
         title: 'Sudoku Demo',
         theme: myTheme,
         debugShowCheckedModeBanner: false,
         home: BannerWidget(
-          child: BlocProvider(
-            create: (context) => GridBloc(),
-            child: GridPage(),
-          ),
-        ),
+            child: MultiBlocProvider(
+          providers: [
+            BlocProvider<NavBloc>(create: (context) => navBloc),
+            BlocProvider<TimerBloc>(create: (context) => timerBloc),
+            BlocProvider<GridBloc>(create: (context) => gridBloc),
+          ],
+          child: BannerWidget(child: MyNavigator()),
+        )),
       );
     });
   }
@@ -36,8 +48,7 @@ class BannerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Banner(
-      child: child,
-      location: BannerLocation.topEnd,
+      location: BannerLocation.bottomEnd,
       message: 'P&P',
       color: Colors.green.withOpacity(0.6),
       textStyle: TextStyle(
@@ -47,6 +58,7 @@ class BannerWidget extends StatelessWidget {
         color: Colors.white70,
       ),
       textDirection: TextDirection.ltr,
+      child: child,
     );
   }
 }

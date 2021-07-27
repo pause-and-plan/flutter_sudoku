@@ -12,6 +12,12 @@ class MyColors {
 ThemeData myTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColorDark: Colors.blue,
+  buttonTheme: ButtonThemeData(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(40),
+      side: BorderSide(color: Colors.white),
+    ),
+  ),
 );
 
 const double aspectRatio = 1;

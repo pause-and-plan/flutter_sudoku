@@ -22,6 +22,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   bloc_test: ^8.0.2
+  flutter_launcher_icons: ^0.9.1
+
+flutter_icons:
+  android: "launcher_icon"
+  image_path: "assets/logo_blue.png"
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo_white.png
+    - assets/logo_blue.png

@@ -1,0 +1,30 @@
+part of 'timer_bloc.dart';
+
+abstract class TimerEvent extends Equatable {
+  const TimerEvent();
+  get props => [];
+}
+
+class TimerPlayEvent extends TimerEvent {
+  TimerPlayEvent();
+}
+
+class TimerTickEvent extends TimerEvent {
+  final int duration;
+  TimerTickEvent(this.duration);
+
+  @override
+  get props => [duration];
+}
+
+class TimerPauseEvent extends TimerEvent {
+  TimerPauseEvent();
+}
+
+class TimerResumeEvent extends TimerEvent {
+  TimerResumeEvent();
+}
+
+class TimerResetEvent extends TimerEvent {
+  TimerResetEvent();
+}

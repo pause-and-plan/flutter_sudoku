@@ -40,14 +40,6 @@ class GridGeneratorBloc extends Bloc<GridGeneratorEvent, GridGeneratorState> {
       _progression = (_index + 1) ~/ Grid.length;
       _tryResolveCurrBox();
       yield GridGeneratorRunning(boxList: _boxList, progression: _progression);
-
-      // var nextState =
-      //     GridGeneratorRunning(boxList: boxList, progression: _progression);
-      // if (state == nextState) {
-      //   print('in generator emit same running state');
-      // } else {
-      //   print('in generator emit different running state');
-      // }
     }
     yield GridGeneratorComplete(boxList: _boxList);
   }

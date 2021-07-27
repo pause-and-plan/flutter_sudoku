@@ -54,14 +54,6 @@ class GridEditable extends GridState {
   }
 }
 
-class GridLocked extends GridState {
-  const GridLocked({
-    required List<Box> boxList,
-    required bool annotation,
-    required bool soluce,
-  }) : super(boxList: boxList, annotation: annotation, soluce: soluce);
-}
-
 class GridComplete extends GridState {
   const GridComplete({
     required List<Box> boxList,
