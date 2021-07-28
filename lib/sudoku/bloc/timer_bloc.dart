@@ -10,6 +10,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   StreamSubscription<int>? _tickSubscription;
   TimerBloc() : super(TimerInitial());
 
+  bool get enable => !(state is TimerComplete);
+
   void onPressPlayPause() {
     if (state is TimerInitial) {
       add(TimerPlayEvent());
@@ -30,6 +32,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       yield* _pauseEventToState(event);
     } else if (event is TimerResumeEvent) {
       yield* _resumeEventToState(event);
+    } else if (event is TimerStopEvent) {
+      yield* _stopEventToState(event);
     } else if (event is TimerResetEvent) {
       yield* _resetEventToState(event);
     }
@@ -59,6 +63,11 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
       _tickSubscription?.resume();
       yield TimerRunning(state.duration);
     }
+  }
+
+  Stream<TimerState> _stopEventToState(TimerStopEvent event) async* {
+    _tickSubscription?.cancel();
+    yield TimerComplete(state.duration);
   }
 
   Stream<TimerState> _resetEventToState(TimerResetEvent event) async* {

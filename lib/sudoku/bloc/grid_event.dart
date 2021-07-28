@@ -66,3 +66,5 @@ class GridResetEvent extends GridEvent {
 class GridUndoEvent extends GridEvent {
   const GridUndoEvent() : super();
 }
+
+class TestGridWinEvent extends GridEvent {}

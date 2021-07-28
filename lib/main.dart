@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
-        title: 'Sudoku Demo',
+        title: 'Sudoku',
         theme: myTheme,
         debugShowCheckedModeBanner: false,
         home: BannerWidget(

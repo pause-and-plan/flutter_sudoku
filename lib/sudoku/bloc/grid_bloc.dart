@@ -57,8 +57,19 @@ class GridBloc extends Bloc<GridEvent, GridState> {
         yield* _pressAnnotationEventToState(event);
       } else if (event is GridUndoEvent) {
         yield* _undoEventToState(event);
+      } else if (event is TestGridWinEvent) {
+        yield* _winTestEventToState();
       }
     }
+  }
+
+  Stream<GridState> _winTestEventToState() async* {
+    List<Box> nextList = _boxList.map((Box box) {
+      return box.copyWith(symbol: box.soluce);
+    }).toList();
+    _boxList = nextList;
+    // yield GridComplete(boxList: _boxList, annotation: _annotation);
+    yield (state as GridEditable).copyWith(boxList: _boxList);
   }
 
   Stream<GridState> _undoEventToState(GridUndoEvent event) async* {
@@ -100,7 +111,12 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       } else {
         _currBox = _currBox.copyWith(symbol: event.symbol, annotations: []);
       }
-      yield (state as GridEditable).copyWith(boxList: _boxList);
+      if (_shouldConsiderGridAsComplete()) {
+        yield GridComplete(boxList: _boxList, annotation: _annotation);
+        timerBloc.add(TimerStopEvent());
+      } else {
+        yield (state as GridEditable).copyWith(boxList: _boxList);
+      }
     }
   }
 
@@ -140,5 +156,14 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       }
       yield (state as GridEditable).copyWith(boxList: _boxList);
     }
+  }
+
+  bool _shouldConsiderGridAsComplete() {
+    if (_boxList.isEmpty) return false;
+    for (Box box in _boxList) {
+      if (box.symbol.hasValue == false) return false;
+      if (box.hasError) return false;
+    }
+    return true;
   }
 }

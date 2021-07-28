@@ -17,14 +17,10 @@ class TimerTickEvent extends TimerEvent {
   get props => [duration];
 }
 
-class TimerPauseEvent extends TimerEvent {
-  TimerPauseEvent();
-}
+class TimerPauseEvent extends TimerEvent {}
 
-class TimerResumeEvent extends TimerEvent {
-  TimerResumeEvent();
-}
+class TimerResumeEvent extends TimerEvent {}
 
-class TimerResetEvent extends TimerEvent {
-  TimerResetEvent();
-}
+class TimerStopEvent extends TimerEvent {}
+
+class TimerResetEvent extends TimerEvent {}

@@ -31,10 +31,12 @@ class NavBloc extends Bloc<NavEvent, NavState> {
   }
 
   Stream<NavState> _navigateEventToState(NavigateEvent event) async* {
-    if (event.screenKey == NavHomePage.pageKey) {
-      yield NavHomePage();
-    } else if (event.screenKey == NavGridPage.pageKey) {
-      yield NavGridPage([...state.stack, state]);
+    if (event.screenKey != state.key) {
+      if (event.screenKey == NavHomePage.pageKey) {
+        yield NavHomePage();
+      } else if (event.screenKey == NavGridPage.pageKey) {
+        yield NavGridPage([...state.stack, state]);
+      }
     }
   }
 }
