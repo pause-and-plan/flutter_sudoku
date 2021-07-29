@@ -25,7 +25,7 @@ class _NewGameFormState extends State<NewGameForm> {
     GridBloc gridBloc = context.read<GridBloc>();
 
     bool canResumeGame =
-        context.select((GridBloc bloc) => (bloc.state is GridEditable));
+        context.select((GridBloc bloc) => (bloc.state.isInEdition));
 
     return Center(
       child: Column(

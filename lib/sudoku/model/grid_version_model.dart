@@ -8,4 +8,18 @@ class GridVersion extends Equatable {
 
   @override
   List<Object> get props => [boxList, index];
+
+  Map toJson() {
+    return {
+      'boxList': boxList.map((Box box) => box.toJson()),
+      'index': index,
+    };
+  }
+
+  static fromJson(Map<String, dynamic> json) {
+    return GridVersion(
+      boxList: json['boxList'] as List<Box>,
+      index: json['index'] as int,
+    );
+  }
 }

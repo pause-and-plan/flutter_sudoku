@@ -1,0 +1,1 @@
+* how to transform dart class to json

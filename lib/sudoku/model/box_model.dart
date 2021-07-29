@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:sudoku_provider/sudoku_provider.dart';
 
@@ -39,6 +41,27 @@ class Box extends Equatable {
           annotations: annotations,
           isPuzzle: true,
         );
+
+  factory Box.fromJson(Map<String, dynamic> json) {
+    return Box(
+      soluce: json['soluce'] as Symbol,
+      symbol: json['symbol'] as Symbol,
+      annotations:
+          List<Symbol>.from(json['annotations'].map((x) => Symbol.fromJson(x))),
+      isPuzzle: json['isPuzzle'] as bool,
+      isFocus: json['isFocus'] as bool,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'soluce': soluce.toJson(),
+      'symbol': symbol.toJson(),
+      'annotation': List<dynamic>.from(annotations.map((e) => e.toJson())),
+      'isPuzzle': isPuzzle,
+      'isFocus': isFocus,
+    };
+  }
 
   Box reset() {
     if (isPuzzle) {

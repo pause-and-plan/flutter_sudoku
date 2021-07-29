@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(
             padding: EdgeInsets.all(50),
-            child: Image(image: AssetImage('assets/logo_bold_white.png')),
+            child: Image(image: AssetImage('assets/logo_light_white.png')),
           ),
           NewGameForm()
         ]),

@@ -59,6 +59,14 @@ class Symbol extends Equatable {
   ];
   static List<Symbol> orderedList() => [...list];
   static List<Symbol> unorderedList() => orderedList()..shuffle();
+
+  Map<String, dynamic> toJson() {
+    return {'value': value};
+  }
+
+  factory Symbol.fromJson(Map<String, dynamic> json) {
+    return Symbol(value: json['value'] as Symbols);
+  }
 }
 
 enum Symbols { none, s1, s2, s3, s4, s5, s6, s7, s8, s9 }

@@ -17,7 +17,7 @@ class BoxView extends StatelessWidget {
       builder: (context, state) {
         Box box = state.boxList[index];
         bool hideText = false;
-        if (state is GridCreation) hideText = true;
+        if (state.isInCreation) hideText = true;
 
         if (box.disable) {
           return BoxContainer(

@@ -14,9 +14,9 @@ class GridPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool shouldShowEditableSection =
-        !context.select((GridBloc gridBloc) => gridBloc.state is GridComplete);
+        !context.select((GridBloc gridBloc) => gridBloc.state.isComplete);
     bool shouldShowPlayAgainSection =
-        context.select((GridBloc gridBloc) => gridBloc.state is GridComplete);
+        context.select((GridBloc gridBloc) => gridBloc.state.isComplete);
 
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +82,7 @@ class WinDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<GridBloc, GridState>(
       listener: (context, state) {
-        if (state is GridComplete) {
+        if (state.isComplete) {
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(

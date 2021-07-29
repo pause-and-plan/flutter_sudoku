@@ -1,7 +1,8 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:sudoku/sudoku/bloc/timer_bloc.dart';
 import 'package:sudoku/sudoku/model/box_model.dart';
 import 'package:sudoku/sudoku/model/grid_version_model.dart';
@@ -15,7 +16,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   final GridRepoBloc repo = GridRepoBloc();
   final TimerBloc timerBloc;
   List<GridVersion> _history = [];
-  List<Box> _boxList = GridInitial.initialBoxList();
+  List<Box> _boxList = GridState.initialBoxList();
   bool _annotation = false;
   bool _soluce = false;
   int _index = 0;
@@ -27,7 +28,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   }
 
   GridBloc({required this.timerBloc})
-      : super(GridInitial(boxList: GridInitial.initialBoxList())) {
+      : super(GridState.initial(GridState.initialBoxList())) {
     repo.stream.listen((GridRepoState state) {
       add(GridBuildingEvent(state));
     });
@@ -69,7 +70,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
     }).toList();
     _boxList = nextList;
     // yield GridComplete(boxList: _boxList, annotation: _annotation);
-    yield (state as GridEditable).copyWith(boxList: _boxList);
+    yield state.copyWith(boxList: _boxList);
   }
 
   Stream<GridState> _undoEventToState(GridUndoEvent event) async* {
@@ -77,24 +78,24 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       _boxList = _history.last.boxList;
       _index = _history.last.index;
       _history.removeLast();
-      yield (state as GridEditable).copyWith(boxList: _boxList);
+      yield state.copyWith(boxList: _boxList);
     }
   }
 
   Stream<GridState> _pressAnnotationEventToState(
       GridPressAnnotationEvent event) async* {
     _annotation = !_annotation;
-    yield (state as GridEditable).copyWith(annotation: _annotation);
+    yield state.copyWith(annotation: _annotation);
   }
 
   Stream<GridState> _pressCheckEventToState(GridPressCheckEvent event) async* {
     _soluce = !_soluce;
-    yield (state as GridEditable).copyWith(soluce: _soluce);
+    yield state.copyWith(soluce: _soluce);
   }
 
   Stream<GridState> _resetEventToState(GridResetEvent event) async* {
     _boxList = _boxList.map((Box box) => box.reset()).toList();
-    yield (state as GridEditable).copyWith(boxList: _boxList);
+    yield state.copyWith(boxList: _boxList);
     _history = [];
   }
 
@@ -112,10 +113,10 @@ class GridBloc extends Bloc<GridEvent, GridState> {
         _currBox = _currBox.copyWith(symbol: event.symbol, annotations: []);
       }
       if (_shouldConsiderGridAsComplete()) {
-        yield GridComplete(boxList: _boxList, annotation: _annotation);
+        yield state.copyWith(status: GridStatus.complete);
         timerBloc.add(TimerStopEvent());
       } else {
-        yield (state as GridEditable).copyWith(boxList: _boxList);
+        yield state.copyWith(boxList: _boxList);
       }
     }
   }
@@ -124,20 +125,20 @@ class GridBloc extends Bloc<GridEvent, GridState> {
     if (_currBox.isFocus) {
       _history.add(GridVersion(boxList: _boxList, index: _index));
       _currBox = _currBox.reset().copyWith(isFocus: true);
-      yield (state as GridEditable).copyWith(boxList: _boxList);
+      yield state.copyWith(boxList: _boxList);
     }
   }
 
   Stream<GridState> _buildEventToState(GridBuildingEvent event) async* {
     if (event.state is GridRepoInitial) {
-      yield GridInitial(boxList: event.state.boxList);
+      yield GridState.initial(event.state.boxList);
     } else if (event.state is GridRepoRunning) {
-      yield GridCreation(boxList: event.state.boxList);
+      yield GridState.inCreation(event.state.boxList);
     } else if (event.state is GridRepoComplete) {
       _boxList = event.state.boxList;
       _history = [];
       timerBloc.add(TimerPlayEvent());
-      yield GridEditable(
+      yield GridState.inEdition(
         boxList: _boxList,
         annotation: _annotation,
         soluce: _soluce,
@@ -154,7 +155,7 @@ class GridBloc extends Bloc<GridEvent, GridState> {
       } else {
         _currBox = _currBox.copyWith(isFocus: !_currBox.isFocus);
       }
-      yield (state as GridEditable).copyWith(boxList: _boxList);
+      yield state.copyWith(boxList: _boxList);
     }
   }
 
@@ -166,4 +167,10 @@ class GridBloc extends Bloc<GridEvent, GridState> {
     }
     return true;
   }
+
+  @override
+  GridState fromJson(Map<String, dynamic> json) => GridState.fromJson(json);
+
+  @override
+  Map<String, dynamic> toJson(GridState state) => state.toJson();
 }

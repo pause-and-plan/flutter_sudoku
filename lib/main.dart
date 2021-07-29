@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sudoku/navigation/bloc/nav_bloc.dart';
 import 'package:sudoku/navigation/view/my_navigator.dart';
@@ -8,7 +10,11 @@ import 'package:sudoku/sudoku/bloc/grid_bloc.dart';
 import 'package:sudoku/sudoku/bloc/timer_bloc.dart';
 import 'package:sudoku/theme/theme.dart';
 
-void main() {
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // HydratedBloc.storage = await HydratedStorage.build(
+  //   storageDirectory: await getTemporaryDirectory(),
+  // );
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
