@@ -1,3 +1,4 @@
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:equatable/equatable.dart';
 
 class Symbol extends Equatable {
@@ -61,7 +62,7 @@ class Symbol extends Equatable {
   static List<Symbol> unorderedList() => orderedList()..shuffle();
 
   Map<String, dynamic> toJson() {
-    return {'value': value};
+    return {'value': EnumToString.convertToString(value)};
   }
 
   factory Symbol.fromJson(Map<String, dynamic> json) {

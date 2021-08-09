@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:sudoku/sudoku/bloc/timer_bloc.dart';
 import 'package:sudoku/sudoku/model/box_model.dart';
@@ -12,7 +13,7 @@ import 'package:sudoku_provider/sudoku_provider.dart';
 part 'grid_event.dart';
 part 'grid_state.dart';
 
-class GridBloc extends Bloc<GridEvent, GridState> {
+class GridBloc extends HydratedBloc<GridEvent, GridState> {
   final GridRepoBloc repo = GridRepoBloc();
   final TimerBloc timerBloc;
   List<GridVersion> _history = [];
@@ -169,8 +170,12 @@ class GridBloc extends Bloc<GridEvent, GridState> {
   }
 
   @override
-  GridState fromJson(Map<String, dynamic> json) => GridState.fromJson(json);
+  GridState fromJson(Map<String, dynamic> json) {
+    // GridState.fromJson(json);
+    return GridState.initial(GridState.initialBoxList());
+  }
 
   @override
   Map<String, dynamic> toJson(GridState state) => state.toJson();
+  // Map<String, dynamic> toJson(GridState state) => {};
 }

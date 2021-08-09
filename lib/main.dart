@@ -11,10 +11,10 @@ import 'package:sudoku/sudoku/bloc/timer_bloc.dart';
 import 'package:sudoku/theme/theme.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // HydratedBloc.storage = await HydratedStorage.build(
-  //   storageDirectory: await getTemporaryDirectory(),
-  // );
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getTemporaryDirectory(),
+  );
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));

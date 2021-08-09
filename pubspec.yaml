@@ -14,10 +14,10 @@ dependencies:
     path: ./packages/sudoku_provider
   bloc: ^7.0.0
   cupertino_icons: ^1.0.2
+  enum_to_string: ^2.0.1
   equatable: ^2.0.3
   flutter_bloc: ^7.0.1
   hydrated_bloc: ^7.0.1
-  json_serializable: ^5.0.0
   path_provider: ^2.0.2
   sizer: ^2.0.13
 

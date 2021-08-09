@@ -66,10 +66,10 @@ class GridState extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      'boxList': boxList.map((Box box) => box.toJson()),
+      'boxList': boxList.map((Box box) => box.toJson()).toList(),
       'annotation': annotation,
       'soluce': soluce,
-      'status': status,
+      'status': EnumToString.convertToString(status),
     };
   }
 
