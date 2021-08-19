@@ -17,16 +17,6 @@ class GridBloc extends HydratedBloc<GridEvent, GridState> {
   final GridRepoBloc repo = GridRepoBloc();
   final TimerBloc timerBloc;
   List<GridVersion> _history = [];
-  List<Box> _boxList = GridState.initialBoxList();
-  bool _annotation = false;
-  bool _soluce = false;
-  int _index = 0;
-  Box get _currBox => _boxList[_index];
-  set _currBox(Box box) {
-    List<Box> next = [..._boxList];
-    next[_index] = box;
-    _boxList = next;
-  }
 
   GridBloc({required this.timerBloc})
       : super(GridState.initial(GridState.initialBoxList())) {
@@ -44,7 +34,7 @@ class GridBloc extends HydratedBloc<GridEvent, GridState> {
       timerBloc.add(TimerResetEvent());
     } else if (event is GridBuildingEvent) {
       yield* _buildEventToState(event);
-    } else if (timerBloc.state is TimerRunning) {
+    } else if (timerBloc.state.isRunning) {
       if (event is GridPressBoxEvent) {
         yield* _pressBoxEventToState(event);
       } else if (event is GridPressSymbolEvent) {
@@ -66,67 +56,95 @@ class GridBloc extends HydratedBloc<GridEvent, GridState> {
   }
 
   Stream<GridState> _winTestEventToState() async* {
-    List<Box> nextList = _boxList.map((Box box) {
+    List<Box> nextList = state.boxList.map((Box box) {
       return box.copyWith(symbol: box.soluce);
     }).toList();
-    _boxList = nextList;
     // yield GridComplete(boxList: _boxList, annotation: _annotation);
-    yield state.copyWith(boxList: _boxList);
+    yield state.copyWith(boxList: nextList);
   }
 
   Stream<GridState> _undoEventToState(GridUndoEvent event) async* {
     if (_history.isNotEmpty) {
-      _boxList = _history.last.boxList;
-      _index = _history.last.index;
+      List<Box> nextList = _history.last.boxList;
+      int nextIndex = _history.last.index;
       _history.removeLast();
-      yield state.copyWith(boxList: _boxList);
+      yield state.copyWith(boxList: nextList, currBoxIndex: nextIndex);
     }
   }
 
   Stream<GridState> _pressAnnotationEventToState(
       GridPressAnnotationEvent event) async* {
-    _annotation = !_annotation;
-    yield state.copyWith(annotation: _annotation);
+    yield state.copyWith(annotation: !state.annotation);
   }
 
   Stream<GridState> _pressCheckEventToState(GridPressCheckEvent event) async* {
-    _soluce = !_soluce;
-    yield state.copyWith(soluce: _soluce);
+    yield state.copyWith(soluce: !state.soluce);
   }
 
   Stream<GridState> _resetEventToState(GridResetEvent event) async* {
-    _boxList = _boxList.map((Box box) => box.reset()).toList();
-    yield state.copyWith(boxList: _boxList);
+    List<Box> nextList = state.boxList.map((Box box) => box.reset()).toList();
+    yield state.copyWith(boxList: nextList);
     _history = [];
+  }
+
+  saveInHistory() {
+    _history.add(GridVersion(
+      boxList: state.boxList,
+      index: state.currBoxIndex,
+    ));
+  }
+
+  Stream<GridState> _pressAnnotationSymbolEventToState(
+      GridPressSymbolEvent event) async* {
+    List<Symbol> nextAnnotations = state.currBox.toggleAnnotation(event.symbol);
+    Box nextBox = state.currBox.copyWith(
+      symbol: Symbol.none(),
+      annotations: nextAnnotations,
+    );
+    List<Box> nextList = state.replaceBox(nextBox);
+    yield state.copyWith(boxList: nextList);
+  }
+
+  Stream<GridState> _pressBoxSymbolEventToState(
+      GridPressSymbolEvent event) async* {
+    Box nextBox = state.currBox.copyWith(symbol: event.symbol, annotations: []);
+    List<Box> nextList = state.replaceBox(nextBox);
+
+    if (_shouldConsiderGridAsComplete(nextList)) {
+      yield state.copyWith(status: GridStatus.complete, boxList: nextList);
+      timerBloc.add(TimerStopEvent());
+    } else {
+      yield state.copyWith(boxList: nextList);
+    }
+  }
+
+  bool _shouldConsiderGridAsComplete(List<Box> boxList) {
+    if (boxList.isEmpty) return false;
+    for (Box box in boxList) {
+      if (box.symbol.hasValue == false) return false;
+      if (box.hasError) return false;
+    }
+    return true;
   }
 
   Stream<GridState> _pressSymbolEventToState(
       GridPressSymbolEvent event) async* {
-    if (_currBox.isFocus) {
-      _history.add(GridVersion(boxList: _boxList, index: _index));
-      if (_annotation) {
-        List<Symbol> nextAnnotations = _currBox.toggleAnnotation(event.symbol);
-        _currBox = _currBox.copyWith(
-          symbol: Symbol.none(),
-          annotations: nextAnnotations,
-        );
+    if (state.currBox.isFocus) {
+      saveInHistory();
+      if (state.annotation) {
+        yield* _pressAnnotationSymbolEventToState(event);
       } else {
-        _currBox = _currBox.copyWith(symbol: event.symbol, annotations: []);
-      }
-      if (_shouldConsiderGridAsComplete()) {
-        yield state.copyWith(status: GridStatus.complete);
-        timerBloc.add(TimerStopEvent());
-      } else {
-        yield state.copyWith(boxList: _boxList);
+        yield* _pressBoxSymbolEventToState(event);
       }
     }
   }
 
   Stream<GridState> _pressEraseEventToState(GridPressEraseEvent event) async* {
-    if (_currBox.isFocus) {
-      _history.add(GridVersion(boxList: _boxList, index: _index));
-      _currBox = _currBox.reset().copyWith(isFocus: true);
-      yield state.copyWith(boxList: _boxList);
+    if (state.currBox.isFocus) {
+      saveInHistory();
+      Box nextBox = state.currBox.reset().copyWith(isFocus: true);
+      List<Box> nextList = state.replaceBox(nextBox);
+      yield state.copyWith(boxList: nextList);
     }
   }
 
@@ -136,46 +154,38 @@ class GridBloc extends HydratedBloc<GridEvent, GridState> {
     } else if (event.state is GridRepoRunning) {
       yield GridState.inCreation(event.state.boxList);
     } else if (event.state is GridRepoComplete) {
-      _boxList = event.state.boxList;
+      List<Box> nextList = event.state.boxList;
       _history = [];
       timerBloc.add(TimerPlayEvent());
       yield GridState.inEdition(
-        boxList: _boxList,
-        annotation: _annotation,
-        soluce: _soluce,
-      );
+          boxList: nextList,
+          annotation: state.annotation,
+          soluce: state.soluce,
+          currBoxIndex: state.currBoxIndex);
     }
   }
 
   Stream<GridState> _pressBoxEventToState(GridPressBoxEvent event) async* {
-    if (_boxList[event.index].isPuzzle) {
-      if (event.index != _index) {
-        _currBox = _currBox.copyWith(isFocus: false);
-        _index = event.index;
-        _currBox = _currBox.copyWith(isFocus: true);
+    if (state.boxList[event.index].isPuzzle) {
+      List<Box> nextList = [...state.boxList];
+      if (event.index != state.currBoxIndex) {
+        int oldIndex = state.currBoxIndex;
+        nextList[oldIndex] = nextList[oldIndex].copyWith(isFocus: false);
+        nextList[event.index] = nextList[event.index].copyWith(isFocus: true);
       } else {
-        _currBox = _currBox.copyWith(isFocus: !_currBox.isFocus);
+        nextList[event.index] = nextList[event.index].copyWith(isFocus: true);
+        Box nextBox = state.currBox.copyWith(isFocus: !state.currBox.isFocus);
+        nextList[event.index] = nextBox;
       }
-      yield state.copyWith(boxList: _boxList);
+      yield state.copyWith(boxList: nextList, currBoxIndex: event.index);
     }
-  }
-
-  bool _shouldConsiderGridAsComplete() {
-    if (_boxList.isEmpty) return false;
-    for (Box box in _boxList) {
-      if (box.symbol.hasValue == false) return false;
-      if (box.hasError) return false;
-    }
-    return true;
   }
 
   @override
   GridState fromJson(Map<String, dynamic> json) {
-    // GridState.fromJson(json);
-    return GridState.initial(GridState.initialBoxList());
+    return GridState.fromJson(json);
   }
 
   @override
   Map<String, dynamic> toJson(GridState state) => state.toJson();
-  // Map<String, dynamic> toJson(GridState state) => {};
 }

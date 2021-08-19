@@ -66,7 +66,9 @@ class Symbol extends Equatable {
   }
 
   factory Symbol.fromJson(Map<String, dynamic> json) {
-    return Symbol(value: json['value'] as Symbols);
+    return Symbol(
+        value:
+            EnumToString.fromString(Symbols.values, json['value']) as Symbols);
   }
 }
 

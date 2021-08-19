@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sudoku_provider/sudoku_provider.dart';
 
@@ -10,6 +11,7 @@ class Box extends Equatable {
   final bool isPuzzle;
   final bool isFocus;
   final bool isHint;
+
   bool get hasError => symbol.hasValue && soluce != symbol;
   bool get disable => !isPuzzle;
 
@@ -44,10 +46,10 @@ class Box extends Equatable {
 
   factory Box.fromJson(Map<String, dynamic> json) {
     return Box(
-      soluce: json['soluce'] as Symbol,
-      symbol: json['symbol'] as Symbol,
+      soluce: Symbol.fromJson(json['soluce']),
+      symbol: Symbol.fromJson(json['symbol']),
       annotations:
-          List<Symbol>.from(json['annotations'].map((x) => Symbol.fromJson(x))),
+          List<Symbol>.from(json['annotation'].map((x) => Symbol.fromJson(x))),
       isPuzzle: json['isPuzzle'] as bool,
       isFocus: json['isFocus'] as bool,
     );

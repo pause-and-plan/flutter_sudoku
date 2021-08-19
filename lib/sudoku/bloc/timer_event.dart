@@ -17,6 +17,14 @@ class TimerTickEvent extends TimerEvent {
   get props => [duration];
 }
 
+class TimerRehydrateEvent extends TimerEvent {
+  final TimerState rehydratedState;
+  TimerRehydrateEvent(this.rehydratedState);
+
+  @override
+  get props => [rehydratedState];
+}
+
 class TimerPauseEvent extends TimerEvent {}
 
 class TimerResumeEvent extends TimerEvent {}

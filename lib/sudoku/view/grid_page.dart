@@ -113,7 +113,7 @@ class TimerPlayPauseButton extends StatelessWidget {
         TimerBloc timerBloc = context.read<TimerBloc>();
         return IconButton(
           onPressed: timerBloc.enable ? timerBloc.onPressPlayPause : null,
-          icon: (state is TimerRunning)
+          icon: (state.isRunning)
               ? Icon(Icons.pause)
               : Icon(
                   Icons.play_arrow,
