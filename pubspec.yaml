@@ -8,24 +8,25 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-  sudoku_provider:
-    path: ./packages/sudoku_provider
   bloc: ^7.0.0
+  confetti: 0.6.0-nullsafety
   cupertino_icons: ^1.0.2
   enum_to_string: ^2.0.1
   equatable: ^2.0.3
+  flutter:
+    sdk: flutter
   flutter_bloc: ^7.0.1
   hydrated_bloc: ^7.0.1
   path_provider: ^2.0.2
   sizer: ^2.0.13
+  sudoku_provider:
+    path: ./packages/sudoku_provider
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   bloc_test: ^8.0.2
   flutter_launcher_icons: ^0.9.1
+  flutter_test:
+    sdk: flutter
 
 flutter_icons:
   android: "launcher_icon"
