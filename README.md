@@ -2,6 +2,10 @@
 
 A sudoku app project to learn Flutter.
 
+# YouTube presentation
+
+[![J'apprend flutter episode 1](https://img.youtube.com/vi/OtnLNkI90oQ/0.jpg)](https://www.youtube.com/watch?v=OtnLNkI90oQ "J'apprend flutter episode 1")
+
 # work & progress
 
 ## done
@@ -23,6 +27,5 @@ A sudoku app project to learn Flutter.
 
 ## todo
 
-- refact state to merge timer & grid
-- learnings.md
-- work_and_progress.md
+- refact tests
+- publish sudoku package in an other repository
